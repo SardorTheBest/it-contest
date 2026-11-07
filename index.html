@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IT-Квест: Конкурс нейрогенерации</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue-900:#0F3B99;
+  --blue-700:#1E56D6;
+  --blue-600:#2E6EF2;
+  --blue-500:#3E82FF;
+  --blue-300:#8FB6FF;
+  --blue-100:#E8F1FF;
+  --blue-50:#F4F8FF;
+  --ink:#152452;
+  --white:#FFFFFF;
+  --yellow:#FFC93C;
+  --yellow-dark:#E0A500;
+  --green:#2FC37A;
+  --green-dark:#1E9C5E;
+  --pink:#FF6FA5;
+  --radius-lg:28px;
+  --radius-md:20px;
+  --radius-sm:14px;
+  --font-display:'Baloo 2',system-ui,sans-serif;
+  --font-body:'Nunito',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 10% 10%, var(--blue-100) 0%, transparent 45%),
+    radial-gradient(circle at 90% 20%, #FFE9B8 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, var(--blue-100) 0%, transparent 45%),
+    var(--blue-50);
+  min-height:100%;
+  overflow-x:hidden;
+}
+h1,h2,h3,.display{font-family:var(--font-display);font-weight:700;text-wrap:balance;}
+#app{max-width:1000px;margin:0 auto;padding:20px 20px 60px;position:relative;}
+#topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:22px;color:var(--blue-900);}
+.brand .dot{width:14px;height:14px;border-radius:50%;background:var(--yellow);box-shadow:0 3px 0 var(--yellow-dark);}
+.langswitch{display:flex;gap:6px;background:var(--white);border-radius:999px;padding:4px;box-shadow:0 3px 0 rgba(15,59,153,.15);}
+.langbtn{border:none;background:transparent;font-family:var(--font-body);font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;cursor:pointer;color:var(--blue-700);}
+.langbtn.active{background:var(--blue-600);color:#fff;}
+.card{background:var(--white);border-radius:var(--radius-lg);padding:28px;box-shadow:0 10px 0 rgba(15,59,153,.08),0 16px 32px rgba(15,59,153,.12);margin-bottom:20px;}
+.btn{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:17px;
+  color:#fff;
+  background:linear-gradient(180deg,var(--blue-500),var(--blue-600));
+  border:none;
+  border-radius:var(--radius-md);
+  padding:16px 26px;
+  cursor:pointer;
+  box-shadow:0 6px 0 var(--blue-900),0 10px 18px rgba(15,59,153,.3);
+  transition:transform .08s ease;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+}
+.btn:active{transform:translateY(6px);box-shadow:0 0 0 var(--blue-900),0 2px 6px rgba(15,59,153,.25);}
+.btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:0 6px 0 rgba(15,59,153,.3);}
+.btn.secondary{background:linear-gradient(180deg,#fff,#EFF4FF);color:var(--blue-700);box-shadow:0 6px 0 var(--blue-300),0 10px 18px rgba(15,59,153,.12);}
+.btn.secondary:active{box-shadow:0 0 0 var(--blue-300);}
+.btn.yellow{background:linear-gradient(180deg,#FFD866,var(--yellow));color:#6B4A00;box-shadow:0 6px 0 var(--yellow-dark),0 10px 18px rgba(224,165,0,.3);}
+.btn.green{background:linear-gradient(180deg,#4BDC94,var(--green));box-shadow:0 6px 0 var(--green-dark),0 10px 18px rgba(31,156,94,.3);}
+.btn.block{width:100%;}
+.btn.sm{padding:10px 16px;font-size:14px;box-shadow:0 4px 0 var(--blue-900);}
+.btn.sm:active{box-shadow:0 0 0 var(--blue-900);transform:translateY(4px);}
+input[type=text],textarea,select,input[type=number]{
+  font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--ink);
+  border:3px solid var(--blue-100);border-radius:var(--radius-sm);padding:12px 16px;
+  width:100%;background:var(--blue-50);outline:none;transition:border-color .15s;
+}
+input[type=text]:focus,textarea:focus,select:focus,input[type=number]:focus{border-color:var(--blue-500);}
+label.field{display:block;font-weight:800;font-size:13px;color:var(--blue-700);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
+.row{display:flex;gap:14px;flex-wrap:wrap;}
+.col{flex:1;min-width:220px;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-100);color:var(--blue-700);font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;}
+.center{text-align:center;}
+.muted{color:#6A7AA6;font-weight:600;}
+.landing-choices{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
+.choice-card{flex:1;min-width:240px;max-width:320px;background:var(--white);border-radius:var(--radius-lg);padding:26px;text-align:center;box-shadow:0 10px 0 rgba(15,59,153,.08),0 16px 32px rgba(15,59,153,.12);cursor:pointer;border:4px solid transparent;transition:transform .12s,border-color .12s;}
+.choice-card:hover{transform:translateY(-4px);border-color:var(--blue-300);}
+.choice-emoji{font-size:54px;margin-bottom:8px;}
+.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:14px 0;}
+.avatar-opt{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;border:4px solid transparent;box-shadow:0 4px 0 rgba(15,59,153,.15);transition:transform .1s;background:var(--blue-100);}
+.avatar-opt:hover{transform:scale(1.07);}
+.avatar-opt.selected{border-color:var(--blue-600);background:var(--yellow);box-shadow:0 4px 0 var(--yellow-dark);}
+.steps-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+.step-chip{flex:1;min-width:140px;background:var(--blue-50);border:2px dashed var(--blue-300);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;font-weight:700;color:var(--blue-700);}
+.step-chip b{display:block;font-family:var(--font-display);color:var(--blue-900);font-size:15px;margin-bottom:2px;}
+.theme-box{background:linear-gradient(180deg,var(--blue-600),var(--blue-700));color:#fff;border-radius:var(--radius-md);padding:22px;margin-bottom:18px;box-shadow:0 8px 0 var(--blue-900);}
+.theme-box .label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;font-weight:800;}
+.theme-box .theme-text{font-family:var(--font-display);font-size:24px;margin-top:6px;}
+.dropzone{border:3px dashed var(--blue-300);border-radius:var(--radius-md);padding:22px;text-align:center;background:var(--blue-50);cursor:pointer;}
+.dropzone img{max-width:100%;max-height:220px;border-radius:var(--radius-sm);margin-top:10px;}
+.result-card{border-radius:var(--radius-md);padding:18px 20px;margin-top:14px;display:flex;align-items:center;gap:16px;}
+.result-card.ok{background:#EAFBF1;border:3px solid var(--green);}
+.result-card.wait{background:var(--blue-50);border:3px solid var(--blue-300);}
+.stars{font-size:22px;letter-spacing:2px;}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius-sm);background:var(--blue-50);margin-bottom:8px;font-weight:800;}
+.lb-rank{width:28px;text-align:center;font-family:var(--font-display);color:var(--blue-700);}
+.lb-avatar{font-size:22px;}
+.lb-name{flex:1;}
+.lb-total{color:var(--blue-700);font-family:var(--font-display);}
+.steps-dots{display:flex;gap:8px;justify-content:center;margin:10px 0 20px;flex-wrap:wrap;}
+.step-dot{padding:8px 14px;border-radius:999px;background:var(--blue-100);color:var(--blue-700);font-weight:800;font-size:12px;cursor:pointer;border:none;}
+.step-dot.active{background:var(--blue-600);color:#fff;}
+.podium-wrap{display:flex;align-items:flex-end;justify-content:center;gap:16px;min-height:280px;padding-top:40px;}
+.podium-col{width:150px;text-align:center;opacity:0;transform:translateY(40px);transition:all .6s cubic-bezier(.2,.9,.2,1.2);}
+.podium-col.show{opacity:1;transform:translateY(0);}
+.podium-block{background:linear-gradient(180deg,var(--blue-500),var(--blue-700));border-radius:16px 16px 0 0;box-shadow:0 -6px 0 rgba(0,0,0,.08) inset;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:10px;color:#fff;font-family:var(--font-display);}
+.podium-col.p1 .podium-block{height:190px;background:linear-gradient(180deg,#FFD866,var(--yellow-dark));color:#5B3E00;}
+.podium-col.p2 .podium-block{height:140px;}
+.podium-col.p3 .podium-block{height:100px;background:linear-gradient(180deg,#8FB6FF,var(--blue-600));}
+.podium-face{font-size:40px;margin-bottom:6px;}
+.podium-name{font-size:16px;margin:8px 0 2px;font-family:var(--font-display);}
+.banner{background:var(--yellow);color:#6B4A00;border-radius:var(--radius-sm);padding:12px 16px;font-weight:800;margin-bottom:16px;}
+.banner.red{background:#FFE1E1;color:#A32020;}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;}
+.peers-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.peer-chip{background:var(--blue-100);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:var(--blue-700);}
+.slide-bi{display:grid;gap:14px;}
+@media(min-width:680px){.slide-bi{grid-template-columns:1fr 1fr;}}
+.slide-lang-block{background:var(--blue-50);border-radius:var(--radius-sm);padding:16px 18px;}
+.slide-lang-block .tag{font-size:11px;font-weight:800;letter-spacing:.05em;color:var(--blue-600);text-transform:uppercase;margin-bottom:6px;}
+@media(max-width:600px){.avatar-grid{grid-template-columns:repeat(4,1fr);}.choice-card{min-width:100%;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="brand"><span class="dot"></span>IT-Квест: Нейрогенерация</div>
+    <div class="langswitch">
+      <button class="langbtn" data-lang="ru" onclick="setLang('ru')">RU</button>
+      <button class="langbtn" data-lang="uz" onclick="setLang('uz')">UZ</button>
+    </div>
+  </div>
+  <div id="view"></div>
+</div>
+<canvas id="confetti"></canvas>
+<script>
+const ASSIGNMENTS_RU = [
+  "Кот-космонавт печёт пиццу на Луне",
+  "Робот-ученик собирает цветы в школьном саду",
+  "Дракон играет в футбол с детьми во дворе",
+  "Пингвин открывает кафе на Северном полюсе",
+  "Лисёнок-пилот летит над городом на воздушном шаре",
+  "Черепаха участвует в гонке на самодельной ракете",
+  "Медведь читает книгу под огромным грибом",
+  "Осьминог рисует картину восемью кисточками",
+  "Космонавт встречает смешного пришельца на Марсе",
+  "Енот строит домик на дереве вместе с роботом",
+  "Маленький дракончик греет какао в снежном лесу",
+  "Сова-диджей устраивает дискотеку в библиотеке",
+  "Капибара путешествует на поезде через горы",
+  "Кролик-садовник выращивает светящиеся тыквы",
+  "Пиратский корабль плывёт по облакам над радугой",
+  "Морской конёк исследует подводный замок",
+  "Робот-повар готовит завтрак на космической станции",
+  "Щенок спасает воздушного змея с высокой сосны",
+  "Фея украшает ночной город волшебными фонариками",
+  "Лягушка-король устраивает бал на кувшинке",
+  "Мамонт катается на скейтборде в парке будущего",
+  "Индюк-супергерой спасает праздник от дождя",
+  "Кот и мышонок строят снежную крепость",
+  "Панда играет на барабанах на вершине горы",
+  "Инопланетянин выбирает мороженое на земном пляже",
+  "Волшебный автобус доставляет детей в школу на облаках",
+  "Белка-фотограф снимает северное сияние",
+  "Робот и дракон запускают бумажный самолётик",
+  "Кит летит среди звёзд и несёт город на спине",
+  "Хомяк исследует джунгли на маленьком тракторе",
+  "Снеговик строит песочный замок на летнем пляже",
+  "Тигр играет в шахматы с умной черепахой",
+  "Волшебная улитка оставляет за собой след из звёзд",
+  "Поварёнок-гном печёт гигантский блин в лесу",
+  "Жираф помогает художнику раскрашивать высокий дом",
+  "Пингвин и тюлень строят ледяной парк развлечений",
+  "Велосипед с крыльями летит над цветочным полем",
+  "Учёный-ребёнок открывает портал в мир динозавров",
+  "Лев-музыкант играет джаз на крыше небоскрёба",
+  "Маленький призрак учится танцевать балет",
+  "Робот-почтальон доставляет письмо на дно океана",
+  "Лиса и ёжик устраивают пикник в осеннем лесу",
+  "Черепаха-космонавт гуляет по кольцам Сатурна",
+  "Дракон раскрашивает скучный замок яркими узорами",
+  "Летающая библиотека приносит книги в далёкую деревню",
+  "Обезьянка чинит старый музыкальный автомат",
+  "Семья выдр строит плот и плывёт по реке",
+  "Волшебный карандаш оживляет рисунки на школьной доске",
+  "Кактус в ковбойской шляпе танцует на Диком Западе",
+  "Космическая теплица выращивает гигантские арбузы"
+];
+const ASSIGNMENTS_UZ = [
+  "Mushuk-kosmonavt Oyda pitsa pishiryapti",
+  "Robot-o'quvchi maktab bog'ida gullar terayapti",
+  "Ajdaho bolalar bilan hovlida futbol o'ynayapti",
+  "Pingvin Shimoliy qutbda kafe ochyapti",
+  "Tulki uchuvchisi havo sharida shahar ustidan uchyapti",
+  "Toshbaqa o'zi yasagan raketada poygada qatnashyapti",
+  "Ayiq ulkan qo'ziqorin tagida kitob o'qiyapti",
+  "Ahtapot sakkizta mo'yqalam bilan rasm chizyapti",
+  "Kosmonavt Marsda kulgili sayyoralik bilan uchrashyapti",
+  "Yenot robot bilan daraxtda uy quryapti",
+  "Kichkina ajdaho qorli o'rmonda kakao isitayapti",
+  "Boyqush-dj kutubxonada diskoteka uyushtiryapti",
+  "Kapibara tog'lar orasidan poyezdda sayohat qilyapti",
+  "Quyon-bog'bon nur sochuvchi qovoqlar o'stiryapti",
+  "Qaroqchilar kemasi kamalak ustidagi bulutlarda suzyapti",
+  "Dengiz oti suv ostidagi qasrni o'rganyapti",
+  "Robot-oshpaz kosmik stansiyada nonushta tayyorlayapti",
+  "Kuchukcha baland qarag'aydagi varrakni qutqaryapti",
+  "Pari tungi shaharni sehrli chiroqlar bilan bezayapti",
+  "Baqa-podshoh nilufar bargida bazm uyushtiryapti",
+  "Mamont kelajak bog'ida skeytbord uchyapti",
+  "Kurka-superqahramon bayramni yomg'irdan qutqaryapti",
+  "Mushuk va sichqoncha qor qal'a quryapti",
+  "Panda tog' cho'qqisida baraban chalyapti",
+  "Sayyoralik Yer sohilida muzqaymoq tanlayapti",
+  "Sehrli avtobus bolalarni bulutlar ustidan maktabga olib boryapti",
+  "Olmaxon-fotograf shimol yog'dusini suratga olyapti",
+  "Robot va ajdaho qog'oz samolyot uchiryapti",
+  "Kit yulduzlar orasida uchib, belida shahar olib ketyapti",
+  "Olmaxoncha mitti traktorda changalzorni o'rganyapti",
+  "Qorbobo yozgi sohilda qumdan qasr quryapti",
+  "Yo'lbars aqlli toshbaqa bilan shaxmat o'ynayapti",
+  "Sehrli salyangoz ortidan yulduzli iz qoldiryapti",
+  "Mitti oshpaz o'rmonda ulkan quymoq pishiryapti",
+  "Jirafa rassomga baland uyni bo'yashda yordam beryapti",
+  "Pingvin va tyulen muzli attraksion bog'ini quryapti",
+  "Qanotli velosiped gulzor ustidan uchyapti",
+  "Bola olim dinozavrlar olamiga portal ochyapti",
+  "Sher-musiqachi osmono'par bino tomida jazz chalyapti",
+  "Kichkina arvoh balet raqsini o'rganyapti",
+  "Robot-pochtachi okean tubiga xat yetkazyapti",
+  "Tulki va tipratikan kuzgi o'rmonda piknik qilyapti",
+  "Toshbaqa-kosmonavt Saturn halqalari bo'ylab sayr qilyapti",
+  "Ajdaho zerikarli qasrni rang-barang naqshlar bilan bezayapti",
+  "Uchar kutubxona olis qishloqqa kitoblar olib boryapti",
+  "Maymuncha eski musiqa avtomatini tuzatyapti",
+  "Suvsarlar oilasi sol yasab, daryoda suzyapti",
+  "Sehrli qalam maktab doskasidagi rasmlarni jonlantiryapti",
+  "Kovboy shlyapali kaktus Yovvoyi G'arbda raqsga tushyapti",
+  "Kosmik issiqxonada ulkan tarvuzlar o'syapti"
+];
+const PROMPT_TIPS = [
+  {ru:"Напиши, какие цвета и настроение подойдут герою.",uz:"Qahramonga mos ranglar va kayfiyatni tasvirlang."},
+  {ru:"Уточни действие: что именно делает герой и как?",uz:"Harakatni aniq yozing: u nima qilyapti va qanday?"},
+  {ru:"Добавь место события и детали заднего плана.",uz:"Voqea joyi va orqa fon tafsilotlarini qo'shing."},
+  {ru:"Выбери стиль: мультфильм, акварель или 3D.",uz:"Rasm uslubini tanlang: multfilm, akvarel yoki 3D."},
+  {ru:"Опиши выражение лица героя и его настроение.",uz:"Qahramonning yuz ifodasi va hissiyotini tasvirlang."},
+  {ru:"Добавь освещение: закат, неон или звёздное небо.",uz:"Yorug'likni qo'shing: quyosh botishi, neon yoki yulduzlar."},
+  {ru:"Добавь маленькую интересную деталь — картинка станет особенной.",uz:"Rasm o'ziga xos bo'lishi uchun qiziqarli detal qo'shing."},
+  {ru:"Напиши, что герой держит или кто рядом с ним.",uz:"Qahramon nimani ushlab turgani yoki kim bilanligini yozing."},
+  {ru:"Опиши передний план и пейзаж вдали.",uz:"Old fon va uzoqdagi manzarani ham tasvirlab ko'ring."},
+  {ru:"Выбери два-три главных цвета и добавь их в промпт.",uz:"Ikki-uchta asosiy rangni tanlab, promptda ayting."}
+];
+if(ASSIGNMENTS_RU.length!==50 || ASSIGNMENTS_UZ.length!==50) throw new Error('Exactly 50 contest assignments are required');
+
+const AVATARS = ["🚀","🤖","🐉","🦊","🐼","🦄","👽","🐧","🦁","🧙"];
+const AV_BG = ["#8FB6FF","#FFC93C","#FF6FA5","#2FC37A","#B59CFF","#8FE3FF","#FFB199","#A0E7A0","#FFE066","#C9B8FF"];
+
+const PHASES = ["lobby","slide1","slide2","slide3","round1","round2","round3","results"];
+
+const I18N = {
+  ru:{
+    chooseRole:"Выбери свою роль",
+    hostRole:"Я ведущий (учитель/капитан)",
+    hostRoleDesc:"Управляю конкурсом с большого экрана",
+    hostPin:"Код ведущего",
+    hostPinPh:"Введите секретный код ведущего",
+    hostUnlock:"Войти как ведущий",
+    badHostPin:"Код не подошёл или сервер не настроен. Проверьте код и настройки.",
+    joinRole:"Я участник",
+    joinRoleDesc:"Играю со своего телефона или компьютера",
+    yourName:"Как тебя зовут?",
+    namePh:"Введи имя",
+    pickAvatar:"Выбери аватар",
+    join:"Войти в игру",
+    waitingRoom:"Ждём начала игры...",
+    playersOnline:"Участников на связи",
+    hostStart:"Начать презентацию",
+    next:"Далее",
+    slide1Title:"Зачем мы здесь?",
+    slide1Body:"Сегодня мы попробуем себя в роли настоящих AI-художников! Ты придумаешь описание картинки (промпт), нейросеть её нарисует, а наш дружелюбный ИИ-судья оценит результат. Три раунда — три шанса набрать максимум баллов!",
+    slide2Title:"Как устроен сайт",
+    slide2Body:"У каждого раунда — своя тема. Ты пишешь промпт, открываешь сайт-генератор, создаёшь картинку, возвращаешься сюда и загружаешь результат. ИИ-судья посмотрит на картинку и прочитает твой промпт, а потом даст оценку и доброе слово.",
+    slide3Title:"Как написать хороший промпт",
+    slide3Body:"Хороший промпт — это: КТО (герой) + ЧТО ДЕЛАЕТ (действие) + ГДЕ (место) + КАКОЙ (настроение/цвет/стиль). Например: «Весёлый робот танцует на крыше ночного города, яркие неоновые цвета». Напиши тренировочный промпт — сайт подскажет, что можно добавить!",
+    tryPrompt:"Твой тренировочный промпт",
+    tryPromptPh:"Напиши промпт для любой картинки...",
+    getTip:"Получить подсказку",
+    thinking:"ИИ думает...",
+    round:"Раунд",
+    yourTask:"Твоё задание",
+    step1:"1. Прочитай тему",
+    step1d:"Она написана выше",
+    step2:"2. Открой генератор",
+    step2d:"Нажми кнопку и придумай промпт",
+    step3:"3. Скопируй картинку",
+    step3d:"Или сохрани и загрузи файлом",
+    step4:"4. Отправь на оценку",
+    step4d:"Вставь картинку и промпт сюда",
+    openGenerator:"Открыть генератор картинок",
+    yourPrompt:"Твой промпт (что ты ввёл в генератор)",
+    yourPromptPh:"Опиши, что ты написал для генерации...",
+    dropHere:"Нажми, чтобы выбрать картинку, или скопируй и вставь сюда (Ctrl+V)",
+    changeImage:"Выбрать другую картинку",
+    submit:"Отправить на оценку",
+    submitted:"Ответ отправлен! Жди оценку ИИ-судьи.",
+    scoreOutOf:"баллов из 10",
+    aiOffline:"ИИ-судья сейчас недоступен. Покажи картинку и промпт ведущему — он поможет с оценкой.",
+    aiNotice:"Картинка и промпт будут отправлены Google Gemini для оценки. Сайт их не сохраняет.",
+    syncOffline:"Связь с конкурсом потеряна. Переподключаемся…",
+    assignmentTip:"Совет для промпта",
+    aiBusy:"ИИ немного занят, попробуй отправить ещё раз через несколько секунд.",
+    aiError:"Что-то пошло не так. Попробуй ещё раз.",
+    retry:"Попробовать снова",
+    showLeaderboard:"Показать лидеров",
+    nextRound:"Следующий раунд",
+    showResults:"Показать победителей",
+    liveScores:"Текущие баллы",
+    manualAdd:"Внести результат вручную",
+    manualName:"Имя участника",
+    manualSave:"Сохранить",
+    resultsTitle:"Поздравляем всех участников!",
+    place1:"1 МЕСТО",place2:"2 место",place3:"3 место",
+    waitBigScreen:"Результаты появятся на большом экране ведущего!",
+    yourScores:"Твои баллы по раундам",
+    hostDashboard:"Экран ведущего",
+    phaseLobby:"Зал ожидания",phaseSlide:"Презентация",phaseRound:"Раунд",phaseResults:"Итоги",
+    linkTip:"Открой эту же ссылку на устройствах участников.",
+    goBack:"Назад к ролям",
+  },
+  uz:{
+    chooseRole:"Rolingizni tanlang",
+    hostRole:"Men boshlovchiman (o'qituvchi)",
+    hostRoleDesc:"Konkursni katta ekrandan boshqaraman",
+    hostPin:"Boshlovchi kodi",
+    hostPinPh:"Boshlovchining maxfiy kodini kiriting",
+    hostUnlock:"Boshlovchi sifatida kirish",
+    badHostPin:"Kod noto'g'ri yoki server sozlanmagan. Kod va sozlamalarni tekshiring.",
+    joinRole:"Men ishtirokchiman",
+    joinRoleDesc:"Telefon yoki kompyuterimdan o'ynayman",
+    yourName:"Ismingiz nima?",
+    namePh:"Ismingizni kiriting",
+    pickAvatar:"Avatar tanlang",
+    join:"O'yinga kirish",
+    waitingRoom:"O'yin boshlanishini kutamiz...",
+    playersOnline:"Ulangan ishtirokchilar",
+    hostStart:"Taqdimotni boshlash",
+    next:"Keyingi",
+    slide1Title:"Nega biz shu yerdamiz?",
+    slide1Body:"Bugun biz haqiqiy AI-rassom bo'lib ko'ramiz! Siz rasm uchun tasvir (prompt) yozasiz, sun'iy intellekt uni chizadi, do'stona AI-hakamimiz esa natijani baholaydi. Uch raund — maksimal ball to'plash uchun uch imkoniyat!",
+    slide2Title:"Sayt qanday ishlaydi",
+    slide2Body:"Har bir raundda o'z mavzusi bor. Siz prompt yozasiz, generator saytini ochasiz, rasm yaratasiz, bu yerga qaytib natijani yuklaysiz. AI-hakam rasmga qarab va promptingizni o'qib, baho va mehribon so'z beradi.",
+    slide3Title:"Yaxshi prompt qanday yoziladi",
+    slide3Body:"Yaxshi prompt: KIM (qahramon) + NIMA QILADI (harakat) + QAYERDA (joy) + QANDAY (kayfiyat/rang/uslub). Masalan: «Quvnoq robot tungi shahar tomida raqsga tushadi, yorqin neon ranglar». Mashq promptingizni yozing — sayt uni yaxshilash bo'yicha maslahat beradi!",
+    tryPrompt:"Mashq promptingiz",
+    tryPromptPh:"Istalgan rasm uchun prompt yozing...",
+    getTip:"Maslahat olish",
+    thinking:"AI o'ylayapti...",
+    round:"Raund",
+    yourTask:"Sizning vazifangiz",
+    step1:"1. Mavzuni o'qing",
+    step1d:"Yuqorida yozilgan",
+    step2:"2. Generatorni oching",
+    step2d:"Tugmani bosing va prompt o'ylab toping",
+    step3:"3. Rasmni nusxalang",
+    step3d:"Yoki saqlab, fayl sifatida yuklang",
+    step4:"4. Baholashga yuboring",
+    step4d:"Rasm va promptni shu yerga qo'ying",
+    openGenerator:"Rasm generatorini ochish",
+    yourPrompt:"Promptingiz (generatorga nima yozgan edingiz)",
+    yourPromptPh:"Generatsiya uchun nima yozganingizni tasvirlang...",
+    dropHere:"Rasmni tanlash uchun bosing, yoki nusxalab shu yerga joylashtiring (Ctrl+V)",
+    changeImage:"Boshqa rasm tanlash",
+    submit:"Baholashga yuborish",
+    submitted:"Yuborildi! AI-hakam bahosini kuting.",
+    scoreOutOf:"ball / 10",
+    aiOffline:"AI-hakam hozir ishlamayapti. Rasm va promptingizni boshlovchiga ko'rsating — u baholashga yordam beradi.",
+    aiNotice:"Rasm va promptingiz baholash uchun Google Gemini'ga yuboriladi. Sayt ularni saqlamaydi.",
+    syncOffline:"Konkurs bilan aloqa uzildi. Qayta ulanmoqda…",
+    assignmentTip:"Prompt uchun maslahat",
+    aiBusy:"AI biroz band, bir necha soniyadan keyin qayta yuboring.",
+    aiError:"Nimadir xato ketdi. Qayta urinib ko'ring.",
+    retry:"Qayta urinish",
+    showLeaderboard:"Yetakchilarni ko'rsatish",
+    nextRound:"Keyingi raund",
+    showResults:"G'oliblarni ko'rsatish",
+    liveScores:"Joriy ballar",
+    manualAdd:"Natijani qo'lda kiritish",
+    manualName:"Ishtirokchi ismi",
+    manualSave:"Saqlash",
+    resultsTitle:"Barcha ishtirokchilarni tabriklaymiz!",
+    place1:"1-O'RIN",place2:"2-o'rin",place3:"3-o'rin",
+    waitBigScreen:"Natijalar boshlovchining katta ekranida chiqadi!",
+    yourScores:"Raundlar bo'yicha ballaringiz",
+    hostDashboard:"Boshlovchi ekrani",
+    phaseLobby:"Kutish zali",phaseSlide:"Taqdimot",phaseRound:"Raund",phaseResults:"Natijalar",
+    linkTip:"Shu havolani ishtirokchilar qurilmalarida oching.",
+    goBack:"Rollarga qaytish",
+  }
+};
+
+let app = {
+  role:null, lang:'ru', name:'', avatar:AVATARS[0],
+  hostPin:'',
+  phase:'lobby', peers:[], scores:{}, submittedRounds:{}, myResult:{}, assignments:{},
+  tipText:'', tipLoading:false, pendingScores:[],
+};
+
+let roomOk = false, serverRevision = -1;
+let nextScoreRetryAt = 0;
+const CLIENT_ID_KEY = 'it-quest-client-id';
+let clientId = sessionStorage.getItem(CLIENT_ID_KEY);
+if(!clientId){ clientId=crypto.randomUUID(); sessionStorage.setItem(CLIENT_ID_KEY,clientId); }
+const savedAssignments = localStorage.getItem('it-quest-assignments-'+clientId);
+if(savedAssignments){ try{ app.assignments=JSON.parse(savedAssignments); }catch(e){ app.assignments={}; } }
+const pendingScoresKey='it-quest-pending-scores-'+clientId;
+const savedPendingScores=localStorage.getItem(pendingScoresKey);
+if(savedPendingScores){ try{ app.pendingScores=JSON.parse(savedPendingScores); }catch(e){ app.pendingScores=[]; } }
+const savedResults=localStorage.getItem('it-quest-results-'+clientId);
+if(savedResults){
+  try{
+    app.myResult=JSON.parse(savedResults);
+    app.submittedRounds=Object.fromEntries(Object.keys(app.myResult).map(key=>[key,true]));
+  }catch(e){ app.myResult={}; app.submittedRounds={}; }
+}
+
+function t(k){ return (I18N[app.lang] && I18N[app.lang][k]) || I18N.ru[k] || k; }
+function el(h){ const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild; }
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[char]);
+}
+
+function setLang(l){ app.lang=l; render(); }
+
+function recomputeTotals(){
+  for(const k in app.scores){
+    const s = app.scores[k];
+    s.total = (s.r1||0)+(s.r2||0)+(s.r3||0);
+  }
+}
+
+async function broadcastState(phase){
+  if(app.role==='host'){
+    await syncRequest('/api/room/phase',{id:clientId,phase});
+  }
+}
+
+async function syncRequest(url, body){
+  const response = await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  if(!response.ok) throw new Error('Contest sync request failed: '+response.status);
+  return response.json();
+}
+
+function updatePresence(){
+  if(!app.role) return Promise.resolve();
+  return syncRequest('/api/room/presence',{
+    id:clientId, role:app.role, name:app.name, avatar:app.avatar, hostPin:app.hostPin
+  }).then(()=>{roomOk=true;}).catch(error=>{
+    roomOk=false;
+    console.error('Contest presence update failed:',error.message);
+    render();
+  });
+}
+
+async function queueScore(score){
+  app.pendingScores.push(score);
+  localStorage.setItem(pendingScoresKey,JSON.stringify(app.pendingScores));
+  await flushPendingScores();
+}
+
+async function flushPendingScores(){
+  if(!app.pendingScores.length || Date.now()<nextScoreRetryAt) return;
+  nextScoreRetryAt=Date.now()+5000;
+  while(app.pendingScores.length){
+    try{
+      await syncRequest('/api/room/score',Object.assign({id:clientId},app.pendingScores[0]));
+      app.pendingScores.shift();
+      localStorage.setItem(pendingScoresKey,JSON.stringify(app.pendingScores));
+    }catch(error){
+      console.error('Contest score sync failed:',error.message);
+      return;
+    }
+  }
+}
+
+async function syncRoom(){
+  try{
+    const response = await fetch('/api/room/state',{cache:'no-store'});
+    if(!response.ok) throw new Error('Contest sync request failed: '+response.status);
+    const data = await response.json();
+    roomOk=true;
+    if(data.revision!==serverRevision){
+      serverRevision=data.revision;
+      app.peers=data.peers;
+      app.scores=Object.assign({},data.scores);
+      app.pendingScores.forEach(score=>{
+        app.scores[score.name]=Object.assign({},app.scores[score.name],{
+          avatar:score.avatar,[score.roundKey]:score.score
+        });
+      });
+      recomputeTotals();
+      if(app.role && PHASES.includes(data.phase)) app.phase=data.phase;
+      render();
+    }
+    await flushPendingScores();
+  }catch(e){
+    if(roomOk){ roomOk=false; render(); }
+  }
+}
+
+setInterval(syncRoom,5000);
+setInterval(()=>{ if(app.role) updatePresence(); },30000);
+syncRoom();
+
+function getAssignment(roundNo){
+  const key='r'+roundNo;
+  if(!app.assignments[key]){
+    const used=new Set(Object.values(app.assignments).map(item=>item&&item.id));
+    const available=ASSIGNMENTS_RU.map((ru,id)=>({id,ru,uz:ASSIGNMENTS_UZ[id]})).filter(item=>!used.has(item.id));
+    if(!available.length) throw new Error('No unused contest assignment remains for this participant');
+    app.assignments[key]=available[Math.floor(Math.random()*available.length)];
+    localStorage.setItem('it-quest-assignments-'+clientId,JSON.stringify(app.assignments));
+  }
+  const assignment=app.assignments[key];
+  return {
+    id:assignment.id,
+    text:app.lang==='uz'?assignment.uz:assignment.ru,
+    tip:PROMPT_TIPS[assignment.id%PROMPT_TIPS.length][app.lang]
+  };
+}
+
+async function askJudge({themeTxt, studentPrompt, imageBlob, lang}){
+  const langName = lang==='uz' ? 'Uzbek' : 'Russian';
+  const bytes = new Uint8Array(await imageBlob.arrayBuffer());
+  let binary = '';
+  for(let offset=0; offset<bytes.length; offset+=0x8000){
+    binary += String.fromCharCode(...bytes.subarray(offset, offset+0x8000));
+  }
+  const response = await fetch('/api/judge', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      theme:themeTxt,
+      prompt:studentPrompt,
+      image: btoa(binary),
+      mimeType:imageBlob.type || 'image/jpeg',
+      language:langName
+    })
+  });
+  let data;
+  try{ data = await response.json(); }catch(e){ data = null; }
+  if(!response.ok){
+    const error = new Error(data && data.error ? data.error : 'AI judge request failed');
+    if(response.status===429) error.code='rate_limited';
+    else if(response.status===503) error.code='not_configured';
+    throw error;
+  }
+  if(!data || !Number.isInteger(data.score) || data.score<1 || data.score>10 || typeof data.comment!=='string'){
+    throw new Error('AI judge returned an invalid result');
+  }
+  return data;
+}
+
+function getPromptTip(draft, lang){
+  const text=draft.toLowerCase();
+  const tips=lang==='uz'
+    ? ['Ranglarni ham qo‘shing.','Qahramon nima qilayotganini aniqroq yozing.','Voqea qayerda bo‘lishini ayting.','Multfilm, akvarel yoki 3D uslubini tanlang.','Qahramonning kayfiyatini tasvirlang.']
+    : ['Добавь в описание яркий цвет.','Уточни, что именно делает герой.','Укажи место, где происходит событие.','Выбери стиль: мультфильм, акварель или 3D.','Опиши настроение или выражение лица героя.'];
+  const cues=lang==='uz'
+    ? [['rang','qizil','ko‘k','yashil'],['qilyapti','o‘ynay','uchyapti','chalyapti'],['da ','ichida','sohil','o‘rmon'],['multfilm','akvarel','3d'],['quvnoq','xafa','hayron','jasur']]
+    : [['цвет','красн','син','зелён'],['делает','играет','летит','танц'],['в ','на ','лес','пляж'],['мульт','акварел','3d'],['весёл','груст','удив','смел']];
+  const missing=cues.findIndex(group=>!group.some(word=>text.includes(word)));
+  return tips[missing<0?4:missing];
+}
+
+function shrinkImage(file, maxDim){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      try{
+        let w=img.width, h=img.height;
+        if(w>h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; }
+        else if(h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+        const c = document.createElement('canvas'); c.width=w; c.height=h;
+        const ctx=c.getContext('2d');
+        if(!ctx) throw new Error('Canvas is unavailable');
+        ctx.drawImage(img,0,0,w,h);
+        c.toBlob(blob=>{
+          URL.revokeObjectURL(url);
+          if(blob) resolve(blob);
+          else reject(new Error('Could not process image'));
+        }, 'image/jpeg', 0.85);
+      }catch(error){
+        URL.revokeObjectURL(url);
+        reject(error);
+      }
+    };
+    img.onerror = ()=>{
+      URL.revokeObjectURL(url);
+      reject(new Error('Could not read image'));
+    };
+    img.src = url;
+  });
+}
+
+function render(){
+  const v = document.getElementById('view');
+  document.querySelectorAll('.langbtn').forEach(b=>b.classList.toggle('active', b.dataset.lang===app.lang));
+  v.innerHTML = '';
+  if(!app.role){ v.appendChild(renderLanding()); return; }
+  if(app.role==='participant' && !app.joined){ v.appendChild(renderNamePick()); return; }
+  v.appendChild(app.role==='host' ? renderHost() : renderParticipant());
+}
+
+function renderLanding(){
+  const wrap = el('<div></div>');
+  wrap.appendChild(el('<div class="card center"><h1>'+ t('chooseRole') +'</h1></div>'));
+  const choices = el('<div class="landing-choices"></div>');
+  const hostCard = el('<div class="choice-card"><div class="choice-emoji">🖥️</div><h3>'+t('hostRole')+'</h3><p class="muted">'+t('hostRoleDesc')+'</p></div>');
+  hostCard.onclick = ()=>{
+    hostCard.innerHTML =
+      '<div class="choice-emoji">🔐</div><h3>'+t('hostPin')+'</h3>'+
+      '<input type="password" id="hostPinInput" maxlength="128" placeholder="'+t('hostPinPh')+'"/>'+
+      '<button class="btn sm" id="hostUnlock" style="margin-top:12px">'+t('hostUnlock')+'</button>'+
+      '<div id="hostPinMsg" class="muted" style="margin-top:10px"></div>';
+    hostCard.onclick=null;
+    hostCard.querySelector('#hostUnlock').onclick=async()=>{
+      const pin=hostCard.querySelector('#hostPinInput').value;
+      const button=hostCard.querySelector('#hostUnlock');
+      const msg=hostCard.querySelector('#hostPinMsg');
+      if(pin.length<12){ msg.textContent=t('badHostPin'); return; }
+      button.disabled=true;
+      try{
+        await syncRequest('/api/room/presence',{
+          id:clientId,role:'host',name:'',avatar:app.avatar,hostPin:pin
+        });
+        app.role='host';
+        app.hostPin=pin;
+        roomOk=true;
+        render();
+      }catch(error){
+        console.error('Host sign-in failed:',error.message);
+        msg.textContent=t('badHostPin');
+        button.disabled=false;
+      }
+    };
+  };
+  const joinCard = el('<div class="choice-card"><div class="choice-emoji">🎮</div><h3>'+t('joinRole')+'</h3><p class="muted">'+t('joinRoleDesc')+'</p></div>');
+  joinCard.onclick = ()=>{ app.role='participant'; render(); };
+  choices.appendChild(hostCard); choices.appendChild(joinCard);
+  wrap.appendChild(choices);
+  return wrap;
+}
+
+function renderNamePick(){
+  const wrap = el('<div class="card"></div>');
+  wrap.innerHTML =
+    '<label class="field">'+t('yourName')+'</label>'+
+    '<input type="text" id="nameInput" placeholder="'+t('namePh')+'" maxlength="20" value="'+escapeHtml(app.name)+'"/>'+
+    '<div style="height:16px"></div>'+
+    '<label class="field">'+t('pickAvatar')+'</label>'+
+    '<div class="avatar-grid" id="avGrid"></div>'+
+    '<button class="btn block" id="joinBtn" style="margin-top:10px">'+t('join')+'</button>';
+  const grid = wrap.querySelector('#avGrid');
+  AVATARS.forEach((a,i)=>{
+    const o = el('<div class="avatar-opt" style="background:'+AV_BG[i]+'">'+a+'</div>');
+    if(a===app.avatar) o.classList.add('selected');
+    o.onclick = ()=>{ app.avatar=a; grid.querySelectorAll('.avatar-opt').forEach(x=>x.classList.remove('selected')); o.classList.add('selected'); };
+    grid.appendChild(o);
+  });
+  wrap.querySelector('#joinBtn').onclick = async ()=>{
+    const nm = wrap.querySelector('#nameInput').value.trim();
+    if(!nm){ wrap.querySelector('#nameInput').focus(); return; }
+    app.name = nm; app.joined = true;
+    if(!app.scores[app.name]) app.scores[app.name] = {avatar:app.avatar, r1:null,r2:null,r3:null,total:0};
+    await updatePresence();
+    render();
+  };
+  return wrap;
+}
+
+function phaseDotLabel(p){
+  if(p==='lobby') return '🏠';
+  if(p.startsWith('slide')) return '📣'+p.slice(-1);
+  if(p.startsWith('round')) return '🎨'+p.slice(-1);
+  if(p==='results') return '🏆';
+  return p;
+}
+
+function renderHost(){
+  const wrap = el('<div></div>');
+  if(!roomOk){ wrap.appendChild(el('<div class="banner red">⚠️ '+t('syncOffline')+'</div>')); }
+  const dots = el('<div class="steps-dots"></div>');
+  PHASES.forEach(p=>{
+    const d = el('<button class="step-dot">'+phaseDotLabel(p)+'</button>');
+    if(p===app.phase) d.classList.add('active');
+    d.onclick = async ()=>{
+      d.disabled=true;
+      try{
+        await broadcastState(p);
+        app.phase=p;
+      }catch(e){
+        roomOk=false;
+      }
+      render();
+    };
+    dots.appendChild(d);
+  });
+  wrap.appendChild(dots);
+
+  const peersCard = el('<div class="card"></div>');
+  peersCard.innerHTML = '<div class="pill">👥 '+t('playersOnline')+': '+(app.peers?app.peers.length:0)+'</div><div class="peers-row" id="peersRow"></div>';
+  const prow = peersCard.querySelector('#peersRow');
+  (app.peers||[]).forEach(p=>{
+    if(p && p.name) prow.appendChild(el('<div class="peer-chip">'+(p.avatar||'🙂')+' '+escapeHtml(p.name)+'</div>'));
+  });
+  wrap.appendChild(peersCard);
+
+  const body = el('<div class="card"></div>');
+  if(app.phase==='lobby'){
+    body.innerHTML = '<h2>'+t('waitingRoom')+'</h2><p class="muted">'+t('linkTip')+'</p>';
+    const b = el('<button class="btn green" style="margin-top:12px">'+t('hostStart')+'</button>');
+    b.onclick = async ()=>{
+      b.disabled=true;
+      try{ await broadcastState('slide1'); app.phase='slide1'; }
+      catch(e){ roomOk=false; }
+      render();
+    };
+    body.appendChild(b);
+  } else if(app.phase.startsWith('slide')){
+    const n = app.phase.slice(-1);
+    const key = n==='1'?'slide1':n==='2'?'slide2':'slide3';
+    body.appendChild(renderSlideBilingual(key));
+    if(key==='slide3'){
+      body.appendChild(el('<p class="muted" style="margin-top:12px">Участники сейчас пишут тренировочный промпт на своих устройствах и получают совет от ИИ.</p>'));
+    }
+    const b = el('<button class="btn" style="margin-top:16px">'+(n==='3'?t('round')+' 1 ▶':t('next'))+'</button>');
+    b.onclick = async ()=>{
+      const phase=n==='1'?'slide2':n==='2'?'slide3':'round1';
+      b.disabled=true;
+      try{ await broadcastState(phase); app.phase=phase; }
+      catch(e){ roomOk=false; }
+      render();
+    };
+    body.appendChild(b);
+  } else if(app.phase.startsWith('round')){
+    const rn = parseInt(app.phase.slice(-1),10);
+    body.innerHTML = '<h2>'+t('round')+' '+rn+'</h2><p class="muted">Участники выбирают (получают) тему, пишут промпт, генерируют и загружают картинку. Их баллы появятся ниже по мере поступления.</p>';
+    const b = el('<button class="btn yellow" style="margin-top:12px">'+(rn<3 ? t('nextRound') : t('showResults'))+'</button>');
+    b.onclick = async ()=>{
+      const phase=rn<3?'round'+(rn+1):'results';
+      b.disabled=true;
+      try{ await broadcastState(phase); app.phase=phase; }
+      catch(e){ roomOk=false; }
+      render();
+    };
+    body.appendChild(b);
+  } else if(app.phase==='results'){
+    body.appendChild(renderPodium());
+  }
+  wrap.appendChild(body);
+
+  if(app.phase.startsWith('round')){
+    wrap.appendChild(renderHostJudgePanel(parseInt(app.phase.slice(-1),10)));
+  }
+
+  wrap.appendChild(renderLeaderboardCard(true));
+  return wrap;
+}
+
+function renderHostJudgePanel(rn){
+  const card = el('<div class="card"></div>');
+  const roundKey = 'r'+rn;
+  card.innerHTML =
+    '<h3>🧑‍🏫 Оценить работу ученика (раунд '+rn+')</h3>'+
+    '<p class="muted">Загрузи работу участника, чтобы ИИ-судья Gemini оценил её по теме и промпту.</p>'+
+    '<label class="field">Имя участника</label>'+
+    '<input type="text" id="jName" placeholder="Как записан участник"/>'+
+    '<label class="field">Задание участника</label>'+
+    '<input type="text" id="jTheme" placeholder="Введи тему, которую получил участник"/>'+
+    '<div style="height:12px"></div>'+
+    '<label class="field">Промпт ученика</label>'+
+    '<textarea id="jPrompt" rows="2" placeholder="Что ученик ввёл в генератор..."></textarea>'+
+    '<div style="height:12px"></div>'+
+    '<div class="dropzone" id="jDz" tabindex="0">'+
+      '<div id="jDzLabel">📋 Нажми, чтобы выбрать картинку, или вставь (Ctrl+V)</div>'+
+      '<img id="jDzImg" style="display:none"/>'+
+    '</div>'+
+    '<div style="height:12px"></div>'+
+    '<button class="btn green block" id="jSubmit" disabled>Спросить ИИ-судью</button>'+
+    '<div id="jMsg"></div>';
+
+  const dz = card.querySelector('#jDz');
+  const dzImg = card.querySelector('#jDzImg');
+  const dzLabel = card.querySelector('#jDzLabel');
+  const submitBtn = card.querySelector('#jSubmit');
+  let pendingBlob = null;
+
+  const fileInput = document.createElement('input');
+  fileInput.type='file'; fileInput.accept='image/*'; fileInput.style.display='none';
+  card.appendChild(fileInput);
+
+  function acceptFile(file){
+    if(!file) return;
+    pendingBlob = file;
+    dzImg.src = URL.createObjectURL(file); dzImg.style.display='block';
+    dzLabel.textContent = t('changeImage');
+    submitBtn.disabled = false;
+  }
+  dz.onclick = ()=> fileInput.click();
+  fileInput.onchange = (e)=> acceptFile(e.target.files[0]);
+  dz.addEventListener('paste', (e)=>{
+    const items = (e.clipboardData || window.clipboardData).items;
+    for(const item of items){ if(item.type.indexOf('image')===0){ acceptFile(item.getAsFile()); break; } }
+  });
+
+  submitBtn.onclick = async ()=>{
+    const nm = card.querySelector('#jName').value.trim();
+    const promptTxt = card.querySelector('#jPrompt').value.trim();
+    const msg = card.querySelector('#jMsg');
+    if(!nm || !promptTxt || !pendingBlob){ msg.innerHTML = '<div class="banner red">Заполни имя, промпт и картинку.</div>'; return; }
+    submitBtn.disabled = true;
+    msg.innerHTML = '<div class="result-card wait">💭 '+t('thinking')+'</div>';
+    try{
+      const txt = card.querySelector('#jTheme').value.trim();
+      if(!txt){ msg.innerHTML = '<div class="banner red">Введи задание участника.</div>'; submitBtn.disabled=false; return; }
+      const small = await shrinkImage(pendingBlob, 768);
+      const data = await askJudge({themeTxt:txt, studentPrompt:promptTxt, imageBlob:small, lang:'ru'});
+      const score = Math.max(1, Math.min(10, Math.round(data.score)));
+      app.scores[nm] = Object.assign({avatar:'🙂'}, app.scores[nm], {[roundKey]:score});
+      recomputeTotals();
+      await queueScore({
+        name:nm,avatar:(app.scores[nm]&&app.scores[nm].avatar)||'🙂',roundKey,score
+      });
+      msg.innerHTML = '<div class="result-card ok">⭐ '+score+'/10 — '+escapeHtml(data.comment||'')+'</div>';
+      pendingBlob = null; dzImg.style.display='none'; dzLabel.textContent = t('dropHere');
+      card.querySelector('#jName').value=''; card.querySelector('#jPrompt').value='';
+      card.querySelector('#jTheme').value='';
+      setTimeout(render, 2200);
+    }catch(e){
+      submitBtn.disabled = false;
+      if(e && e.code==='rate_limited') msg.innerHTML = '<div class="banner red">'+t('aiBusy')+'</div>';
+      else if(e && e.code==='not_configured') msg.innerHTML = '<div class="banner red">'+t('aiOffline')+'</div>';
+      else msg.innerHTML = '<div class="banner red">'+t('aiError')+'</div>';
+    }
+  };
+  return card;
+}
+
+function renderSlideBilingual(key){
+  const titleKeyRu = key+'Title', bodyKeyRu = key+'Body';
+  const box = el(
+    '<div><h2>'+I18N.ru[titleKeyRu]+' / '+I18N.uz[titleKeyRu]+'</h2>'+
+    '<div class="slide-bi">'+
+      '<div class="slide-lang-block"><div class="tag">Русский</div>'+I18N.ru[bodyKeyRu]+'</div>'+
+      '<div class="slide-lang-block"><div class="tag">O\'zbekcha</div>'+I18N.uz[bodyKeyRu]+'</div>'+
+    '</div></div>'
+  );
+  return box;
+}
+
+function renderLeaderboardCard(withManual){
+  const card = el('<div class="card"></div>');
+  card.innerHTML = '<h3>🏅 '+t('liveScores')+'</h3>';
+  const list = el('<div></div>');
+  const rows = Object.entries(app.scores).map(([name,s])=>({name, ...s})).sort((a,b)=>(b.total||0)-(a.total||0));
+  rows.forEach((r,i)=>{
+    list.appendChild(el('<div class="lb-row"><div class="lb-rank">'+(i+1)+'</div><div class="lb-avatar">'+(r.avatar||'🙂')+'</div><div class="lb-name">'+escapeHtml(r.name)+'</div><div class="lb-total">'+(r.total||0)+'</div></div>'));
+  });
+  if(rows.length===0) list.appendChild(el('<p class="muted">Пока нет результатов.</p>'));
+  card.appendChild(list);
+  if(withManual){
+    const form = el(
+      '<div style="margin-top:16px;border-top:2px solid var(--blue-100);padding-top:14px">'+
+      '<label class="field">'+t('manualAdd')+'</label>'+
+      '<div class="row">'+
+        '<div class="col"><input type="text" id="mName" placeholder="'+t('manualName')+'"/></div>'+
+        '<div class="col" style="max-width:90px"><input type="number" id="mR1" placeholder="R1" min="0" max="10"/></div>'+
+        '<div class="col" style="max-width:90px"><input type="number" id="mR2" placeholder="R2" min="0" max="10"/></div>'+
+        '<div class="col" style="max-width:90px"><input type="number" id="mR3" placeholder="R3" min="0" max="10"/></div>'+
+      '</div>'+
+      '<button class="btn sm" style="margin-top:10px" id="mSave">'+t('manualSave')+'</button>'+
+      '</div>'
+    );
+    form.querySelector('#mSave').onclick = ()=>{
+      const nm = form.querySelector('#mName').value.trim();
+      if(!nm) return;
+        const r1 = Math.max(0,Math.min(10,parseInt(form.querySelector('#mR1').value,10)||0));
+        const r2 = Math.max(0,Math.min(10,parseInt(form.querySelector('#mR2').value,10)||0));
+        const r3 = Math.max(0,Math.min(10,parseInt(form.querySelector('#mR3').value,10)||0));
+      app.scores[nm] = Object.assign({avatar:'🙂'}, app.scores[nm], {r1,r2,r3});
+      recomputeTotals();
+        ['r1','r2','r3'].forEach((roundKey,index)=>{
+          queueScore({name:nm,avatar:app.scores[nm].avatar,roundKey,score:[r1,r2,r3][index]});
+        });
+        render();
+    };
+    card.appendChild(form);
+  }
+  return card;
+}
+
+function renderPodium(){
+  const wrap = el('<div></div>');
+  wrap.appendChild(el('<h2 class="center">🏆 '+t('resultsTitle')+'</h2>'));
+  const rows = Object.entries(app.scores).map(([name,s])=>({name, ...s})).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,3);
+  const pw = el('<div class="podium-wrap"></div>');
+  const order = [1,0,2];
+  order.forEach(idx=>{
+    const r = rows[idx];
+    if(!r) return;
+    const place = idx===0?'p1':idx===1?'p2':'p3';
+    const label = idx===0?t('place1'):idx===1?t('place2'):t('place3');
+    const col = el('<div class="podium-col '+place+'"><div class="podium-face">'+(r.avatar||'🙂')+'</div><div class="podium-name">'+escapeHtml(r.name)+'</div><div class="muted">'+(r.total||0)+'</div><div class="podium-block">'+label+'</div></div>');
+    pw.appendChild(col);
+  });
+  wrap.appendChild(pw);
+  setTimeout(()=>{
+    const cols = pw.querySelectorAll('.podium-col');
+    const seq = [pw.querySelector('.p3'), pw.querySelector('.p2'), pw.querySelector('.p1')];
+    seq.forEach((c,i)=>{ if(c) setTimeout(()=>{ c.classList.add('show'); if(i===2) fireConfetti(); }, i*550); });
+  }, 50);
+  return wrap;
+}
+
+function fireConfetti(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvas = document.getElementById('confetti');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#3E82FF','#FFC93C','#2FC37A','#FF6FA5','#8FB6FF'];
+  const parts = [];
+  for(let i=0;i<90;i++){
+    parts.push({x:Math.random()*canvas.width, y:-20-Math.random()*200, vx:(Math.random()-.5)*2.5, vy:2+Math.random()*3, size:6+Math.random()*6, color:colors[i%colors.length], rot:Math.random()*360, vr:(Math.random()-.5)*10});
+  }
+  let frame=0;
+  function tick(){
+    frame++;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+      ctx.restore();
+    });
+    if(frame<170) requestAnimationFrame(tick); else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  tick();
+}
+
+function renderParticipant(){
+  const wrap = el('<div></div>');
+  const header = el('<div class="card" style="display:flex;align-items:center;gap:12px"><div style="font-size:30px">'+app.avatar+'</div><div><b>'+escapeHtml(app.name)+'</b><div class="muted">'+t('phase'+(app.phase.startsWith('round')?'Round':app.phase==='results'?'Results':app.phase.startsWith('slide')?'Slide':'Lobby'))+'</div></div></div>');
+  wrap.appendChild(header);
+  if(!roomOk) wrap.appendChild(el('<div class="banner red">⚠️ '+t('syncOffline')+'</div>'));
+
+  if(app.phase==='lobby'){
+    const c = el('<div class="card center"><h2>'+t('waitingRoom')+'</h2><div class="pill">👥 '+t('playersOnline')+': '+((app.peers||[]).length)+'</div></div>');
+    wrap.appendChild(c);
+  } else if(app.phase==='slide1' || app.phase==='slide2'){
+    const key = app.phase;
+    wrap.appendChild(el('<div class="card">'+
+      '<h2>'+t(key+'Title')+'</h2><p>'+t(key+'Body')+'</p>'+
+      '<p class="muted" style="margin-top:10px">Смотри на большой экран ведущего ⬆️</p></div>'));
+  } else if(app.phase==='slide3'){
+    const c = el('<div class="card"></div>');
+    c.innerHTML = '<h2>'+t('slide3Title')+'</h2><p>'+t('slide3Body')+'</p>'+
+      '<label class="field" style="margin-top:14px">'+t('tryPrompt')+'</label>'+
+      '<textarea id="draftPrompt" rows="2" placeholder="'+t('tryPromptPh')+'"></textarea>'+
+      '<button class="btn secondary" id="coachBtn" style="margin-top:10px">'+t('getTip')+'</button>'+
+      '<div id="coachResult"></div>';
+    c.querySelector('#coachBtn').onclick = ()=>{
+      const draft = c.querySelector('#draftPrompt').value.trim();
+      if(!draft) return;
+      const resBox = c.querySelector('#coachResult');
+      resBox.innerHTML = '<div class="result-card ok">💡 '+escapeHtml(getPromptTip(draft,app.lang))+'</div>';
+    };
+    wrap.appendChild(c);
+  } else if(app.phase.startsWith('round')){
+    wrap.appendChild(renderRoundScreen(parseInt(app.phase.slice(-1),10)));
+  } else if(app.phase==='results'){
+    const c = el('<div class="card center"><h2>🏆</h2><p>'+t('waitBigScreen')+'</p></div>');
+    wrap.appendChild(c);
+  }
+
+  const mine = app.scores[app.name] || {};
+  const sc = el('<div class="card"><h3>'+t('yourScores')+'</h3><div class="row">'+
+    '<div class="pill">R1: '+(mine.r1!=null?mine.r1:'—')+'</div>'+
+    '<div class="pill">R2: '+(mine.r2!=null?mine.r2:'—')+'</div>'+
+    '<div class="pill">R3: '+(mine.r3!=null?mine.r3:'—')+'</div>'+
+    '</div></div>');
+  wrap.appendChild(sc);
+  return wrap;
+}
+
+function renderRoundScreen(rn){
+  const assignment = getAssignment(rn);
+  const txt = assignment.text;
+  const roundKey = 'r'+rn;
+  const already = app.submittedRounds[roundKey];
+
+  const wrap = el('<div></div>');
+  wrap.appendChild(el('<div class="theme-box"><div class="label">'+t('round')+' '+rn+' · '+t('yourTask')+'</div><div class="theme-text">'+txt+'</div></div>'));
+  wrap.appendChild(el('<div class="card"><b>💡 '+t('assignmentTip')+':</b> '+escapeHtml(assignment.tip)+'</div>'));
+
+  const steps = el('<div class="steps-strip">'+
+    '<div class="step-chip"><b>'+t('step1')+'</b>'+t('step1d')+'</div>'+
+    '<div class="step-chip"><b>'+t('step2')+'</b>'+t('step2d')+'</div>'+
+    '<div class="step-chip"><b>'+t('step3')+'</b>'+t('step3d')+'</div>'+
+    '<div class="step-chip"><b>'+t('step4')+'</b>'+t('step4d')+'</div>'+
+    '</div>');
+  wrap.appendChild(steps);
+
+  if(already){
+    const res = app.myResult[roundKey];
+    wrap.appendChild(el('<div class="result-card ok"><div style="font-size:30px">'+(res && res.score>=8?'🌟':res && res.score>=5?'👍':'🙂')+'</div><div><div class="stars">'+'⭐'.repeat(res?Math.round(res.score/2):0)+'</div><div>'+(res?res.score:'?')+' '+t('scoreOutOf')+'</div><div class="muted">'+(res?escapeHtml(res.comment):'')+'</div></div></div>'));
+    return wrap;
+  }
+
+  const card = el('<div class="card"></div>');
+  const genUrl = 'https://www.bing.com/images/create/ai-image-generator?setlang=ru';
+  card.innerHTML =
+    '<a class="btn block" href="'+genUrl+'" target="_blank" rel="noopener">🎨 '+t('openGenerator')+'</a>'+
+    '<div style="height:16px"></div>'+
+    '<label class="field">'+t('yourPrompt')+'</label>'+
+    '<textarea id="promptInput" rows="2" placeholder="'+t('yourPromptPh')+'"></textarea>'+
+    '<div style="height:14px"></div>'+
+    '<div class="dropzone" id="dz" tabindex="0">'+
+      '<div id="dzLabel">📋 '+t('dropHere')+'</div>'+
+      '<img id="dzImg" style="display:none"/>'+
+    '</div>'+
+    '<p class="muted">'+t('aiNotice')+'</p>'+
+    '<div style="height:14px"></div>'+
+    '<button class="btn green block" id="submitBtn" disabled>'+t('submit')+'</button>'+
+    '<div id="roundMsg"></div>';
+  wrap.appendChild(card);
+
+  const dz = card.querySelector('#dz');
+  const dzImg = card.querySelector('#dzImg');
+  const dzLabel = card.querySelector('#dzLabel');
+  const submitBtn = card.querySelector('#submitBtn');
+  let pendingBlob = null;
+
+  const fileInput = document.createElement('input');
+  fileInput.type='file'; fileInput.accept='image/*'; fileInput.style.display='none';
+  card.appendChild(fileInput);
+
+  function acceptFile(file){
+    if(!file || !file.type.startsWith('image/')) return;
+    pendingBlob = file;
+    const url = URL.createObjectURL(file);
+    dzImg.src = url; dzImg.style.display='block';
+    dzLabel.textContent = t('changeImage');
+    submitBtn.disabled = false;
+  }
+
+  dz.onclick = ()=> fileInput.click();
+  fileInput.onchange = (e)=> acceptFile(e.target.files[0]);
+  dz.addEventListener('paste', (e)=>{
+    const clipboard = e.clipboardData || window.clipboardData;
+    if(!clipboard || !clipboard.items) return;
+    const items = clipboard.items;
+    for(const item of items){ if(item.type.indexOf('image')===0){ acceptFile(item.getAsFile()); break; } }
+  });
+
+  submitBtn.onclick = async ()=>{
+    const promptTxt = card.querySelector('#promptInput').value.trim();
+    const msg = card.querySelector('#roundMsg');
+    if(!promptTxt || !pendingBlob){ msg.innerHTML = '<div class="result-card wait">⚠️</div>'; return; }
+    submitBtn.disabled = true;
+    msg.innerHTML = '<div class="result-card wait">💭 '+t('thinking')+'</div>';
+    try{
+      const small = await shrinkImage(pendingBlob, 768);
+      const data = await askJudge({themeTxt:txt, studentPrompt:promptTxt, imageBlob:small, lang:app.lang});
+      const score = Math.max(1, Math.min(10, Math.round(data.score)));
+      const comment = data.comment || '';
+      app.submittedRounds[roundKey] = true;
+      app.myResult[roundKey] = {score, comment};
+      localStorage.setItem('it-quest-results-'+clientId,JSON.stringify(app.myResult));
+      app.scores[app.name] = Object.assign({avatar:app.avatar}, app.scores[app.name], {[roundKey]:score});
+      recomputeTotals();
+      await queueScore({name:app.name,avatar:app.avatar,roundKey,score});
+      render();
+    }catch(e){
+      submitBtn.disabled = false;
+      if(e && e.code==='rate_limited') msg.innerHTML = '<div class="banner red">'+t('aiBusy')+'</div>';
+      else if(e && e.code==='not_configured') msg.innerHTML = '<div class="banner red">'+t('aiOffline')+'</div>';
+      else if(e && e.message==='Failed to fetch'){ msg.innerHTML = '<div class="banner red">'+t('aiOffline')+'</div>'; }
+      else msg.innerHTML = '<div class="banner red">'+t('aiError')+'</div>';
+    }
+  };
+
+  return wrap;
+}
+
+render();
+</script>
+</body>
+</html>

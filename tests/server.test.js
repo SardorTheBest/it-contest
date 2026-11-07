@@ -19,15 +19,22 @@ async function unusedPort() {
 
 test('contest flow works without Claude or a configured Google key', async t => {
   const port = await unusedPort();
+  const testEnv={
+    ...process.env,
+    PORT:String(port),
+    GEMINI_API_KEY:'',
+    CONTEST_HOST_PIN:'test-host-code-123456',
+    VERCEL:''
+  };
+  for (const key of [
+    'UPSTASH_REDIS_REST_URL',
+    'UPSTASH_REDIS_REST_TOKEN',
+    'KV_REST_API_URL',
+    'KV_REST_API_TOKEN'
+  ]) delete testEnv[key];
   const child = spawn(process.execPath, ['server.js'], {
     cwd:path.join(__dirname, '..'),
-    env:{
-      ...process.env,
-      PORT:String(port),
-      GEMINI_API_KEY:'',
-      CONTEST_HOST_PIN:'test-host-code-123456',
-      VERCEL:''
-    },
+    env:testEnv,
     stdio:['ignore','pipe','pipe']
   });
   let logs = '';

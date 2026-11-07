@@ -23,7 +23,6 @@ test('contest flow works without Claude or a configured Google key', async t => 
     ...process.env,
     PORT:String(port),
     GEMINI_API_KEY:'',
-    CONTEST_HOST_PIN:'test-host-code-123456',
     VERCEL:''
   };
   for (const key of [
@@ -80,10 +79,18 @@ test('contest flow works without Claude or a configured Google key', async t => 
   });
 
   assert.equal((await post('/api/room/presence', {
-    id:'33333333-3333-4333-8333-333333333333',role:'host',name:'',avatar:'🚀',hostPin:'wrong-host-code-1234'
+    id:hostId,role:'host',name:'',avatar:'🚀'
+  })).status,200);
+  // A second device cannot take the host role while the first host is active.
+  const intruderId='33333333-3333-4333-8333-333333333333';
+  assert.equal((await post('/api/room/presence', {
+    id:intruderId,role:'host',name:'',avatar:'🚀'
+  })).status,409);
+  assert.equal((await post('/api/room/phase', {
+    id:intruderId,phase:'results'
   })).status,403);
   assert.equal((await post('/api/room/presence', {
-    id:hostId,role:'host',name:'',avatar:'🚀',hostPin:'test-host-code-123456'
+    id:hostId,role:'host',name:'',avatar:'🚀'
   })).status,200);
   assert.equal((await post('/api/room/presence', {
     id:studentId,role:'participant',name:'Алия',avatar:'🐼'

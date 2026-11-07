@@ -273,15 +273,8 @@ const PHASES = ["lobby","slide1","slide2","slide3","round1","round2","round3","r
 
 const I18N = {
   ru:{
-    chooseRole:"Выбери свою роль",
-    hostRole:"Я ведущий (учитель/капитан)",
-    hostRoleDesc:"Управляю конкурсом с большого экрана",
-    hostPin:"Код ведущего",
-    hostPinPh:"Введите секретный код ведущего",
-    hostUnlock:"Войти как ведущий",
-    badHostPin:"Код не подошёл или сервер не настроен. Проверьте код и настройки.",
-    joinRole:"Я участник",
-    joinRoleDesc:"Играю со своего телефона или компьютера",
+    hostBusy:"Ведущий уже подключён с другого устройства. Откройте экран ведущего там или подождите 10 минут после его закрытия.",
+    hostRetry:"Попробовать снова",
     yourName:"Как тебя зовут?",
     namePh:"Введи имя",
     pickAvatar:"Выбери аватар",
@@ -338,19 +331,11 @@ const I18N = {
     yourScores:"Твои баллы по раундам",
     hostDashboard:"Экран ведущего",
     phaseLobby:"Зал ожидания",phaseSlide:"Презентация",phaseRound:"Раунд",phaseResults:"Итоги",
-    linkTip:"Открой эту же ссылку на устройствах участников.",
-    goBack:"Назад к ролям",
+    linkTip:"Открой эту ссылку на устройствах участников:",
   },
   uz:{
-    chooseRole:"Rolingizni tanlang",
-    hostRole:"Men boshlovchiman (o'qituvchi)",
-    hostRoleDesc:"Konkursni katta ekrandan boshqaraman",
-    hostPin:"Boshlovchi kodi",
-    hostPinPh:"Boshlovchining maxfiy kodini kiriting",
-    hostUnlock:"Boshlovchi sifatida kirish",
-    badHostPin:"Kod noto'g'ri yoki server sozlanmagan. Kod va sozlamalarni tekshiring.",
-    joinRole:"Men ishtirokchiman",
-    joinRoleDesc:"Telefon yoki kompyuterimdan o'ynayman",
+    hostBusy:"Boshlovchi boshqa qurilmadan ulangan. Boshlovchi ekranini o'sha yerda oching yoki u yopilgandan keyin 10 daqiqa kuting.",
+    hostRetry:"Qayta urinish",
     yourName:"Ismingiz nima?",
     namePh:"Ismingizni kiriting",
     pickAvatar:"Avatar tanlang",
@@ -407,23 +392,27 @@ const I18N = {
     yourScores:"Raundlar bo'yicha ballaringiz",
     hostDashboard:"Boshlovchi ekrani",
     phaseLobby:"Kutish zali",phaseSlide:"Taqdimot",phaseRound:"Raund",phaseResults:"Natijalar",
-    linkTip:"Shu havolani ishtirokchilar qurilmalarida oching.",
-    goBack:"Rollarga qaytish",
+    linkTip:"Ishtirokchilar qurilmalarida shu havolani oching:",
   }
 };
 
 let app = {
   role:null, lang:'ru', name:'', avatar:AVATARS[0],
-  hostPin:'',
+  hostBlocked:false,
   phase:'lobby', peers:[], scores:{}, submittedRounds:{}, myResult:{}, assignments:{},
   tipText:'', tipLoading:false, pendingScores:[],
 };
 
 let roomOk = false, serverRevision = -1;
 let nextScoreRetryAt = 0;
-const CLIENT_ID_KEY = 'it-quest-client-id';
-let clientId = sessionStorage.getItem(CLIENT_ID_KEY);
-if(!clientId){ clientId=crypto.randomUUID(); sessionStorage.setItem(CLIENT_ID_KEY,clientId); }
+// Main link = participant screen. Host screen opens only via the separate ?host link.
+const IS_HOST_LINK = new URLSearchParams(location.search).has('host');
+// Host id lives in localStorage so a reopened host tab keeps its host lock on the server.
+const idStore = IS_HOST_LINK ? localStorage : sessionStorage;
+const CLIENT_ID_KEY = IS_HOST_LINK ? 'it-quest-host-id' : 'it-quest-client-id';
+let clientId = idStore.getItem(CLIENT_ID_KEY);
+if(!clientId){ clientId=crypto.randomUUID(); idStore.setItem(CLIENT_ID_KEY,clientId); }
+app.role = IS_HOST_LINK ? 'host' : 'participant';
 const savedAssignments = localStorage.getItem('it-quest-assignments-'+clientId);
 if(savedAssignments){ try{ app.assignments=JSON.parse(savedAssignments); }catch(e){ app.assignments={}; } }
 const pendingScoresKey='it-quest-pending-scores-'+clientId;
@@ -473,9 +462,13 @@ async function syncRequest(url, body){
 function updatePresence(){
   if(!app.role) return Promise.resolve();
   return syncRequest('/api/room/presence',{
-    id:clientId, role:app.role, name:app.name, avatar:app.avatar, hostPin:app.hostPin
-  }).then(()=>{roomOk=true;}).catch(error=>{
+    id:clientId, role:app.role, name:app.name, avatar:app.avatar
+  }).then(()=>{
+    roomOk=true;
+    if(app.hostBlocked){ app.hostBlocked=false; render(); }
+  }).catch(error=>{
     roomOk=false;
+    if(app.role==='host' && /: 409$/.test(error.message)) app.hostBlocked=true;
     console.error('Contest presence update failed:',error.message);
     render();
   });
@@ -528,7 +521,8 @@ async function syncRoom(){
 }
 
 setInterval(syncRoom,5000);
-setInterval(()=>{ if(app.role) updatePresence(); },30000);
+setInterval(()=>{ if(app.role==='host' || app.joined) updatePresence(); },30000);
+if(app.role==='host') updatePresence();
 syncRoom();
 
 function getAssignment(roundNo){
@@ -627,48 +621,15 @@ function render(){
   const v = document.getElementById('view');
   document.querySelectorAll('.langbtn').forEach(b=>b.classList.toggle('active', b.dataset.lang===app.lang));
   v.innerHTML = '';
-  if(!app.role){ v.appendChild(renderLanding()); return; }
+  if(app.role==='host' && app.hostBlocked){ v.appendChild(renderHostBlocked()); return; }
   if(app.role==='participant' && !app.joined){ v.appendChild(renderNamePick()); return; }
   v.appendChild(app.role==='host' ? renderHost() : renderParticipant());
 }
 
-function renderLanding(){
-  const wrap = el('<div></div>');
-  wrap.appendChild(el('<div class="card center"><h1>'+ t('chooseRole') +'</h1></div>'));
-  const choices = el('<div class="landing-choices"></div>');
-  const hostCard = el('<div class="choice-card"><div class="choice-emoji">🖥️</div><h3>'+t('hostRole')+'</h3><p class="muted">'+t('hostRoleDesc')+'</p></div>');
-  hostCard.onclick = ()=>{
-    hostCard.innerHTML =
-      '<div class="choice-emoji">🔐</div><h3>'+t('hostPin')+'</h3>'+
-      '<input type="password" id="hostPinInput" maxlength="128" placeholder="'+t('hostPinPh')+'"/>'+
-      '<button class="btn sm" id="hostUnlock" style="margin-top:12px">'+t('hostUnlock')+'</button>'+
-      '<div id="hostPinMsg" class="muted" style="margin-top:10px"></div>';
-    hostCard.onclick=null;
-    hostCard.querySelector('#hostUnlock').onclick=async()=>{
-      const pin=hostCard.querySelector('#hostPinInput').value;
-      const button=hostCard.querySelector('#hostUnlock');
-      const msg=hostCard.querySelector('#hostPinMsg');
-      if(pin.length<12){ msg.textContent=t('badHostPin'); return; }
-      button.disabled=true;
-      try{
-        await syncRequest('/api/room/presence',{
-          id:clientId,role:'host',name:'',avatar:app.avatar,hostPin:pin
-        });
-        app.role='host';
-        app.hostPin=pin;
-        roomOk=true;
-        render();
-      }catch(error){
-        console.error('Host sign-in failed:',error.message);
-        msg.textContent=t('badHostPin');
-        button.disabled=false;
-      }
-    };
-  };
-  const joinCard = el('<div class="choice-card"><div class="choice-emoji">🎮</div><h3>'+t('joinRole')+'</h3><p class="muted">'+t('joinRoleDesc')+'</p></div>');
-  joinCard.onclick = ()=>{ app.role='participant'; render(); };
-  choices.appendChild(hostCard); choices.appendChild(joinCard);
-  wrap.appendChild(choices);
+function renderHostBlocked(){
+  const wrap = el('<div class="card center"><div class="choice-emoji">🔒</div><p>'+t('hostBusy')+'</p>'+
+    '<button class="btn sm" style="margin-top:12px">'+t('hostRetry')+'</button></div>');
+  wrap.querySelector('button').onclick = ()=>updatePresence();
   return wrap;
 }
 
@@ -738,7 +699,8 @@ function renderHost(){
 
   const body = el('<div class="card"></div>');
   if(app.phase==='lobby'){
-    body.innerHTML = '<h2>'+t('waitingRoom')+'</h2><p class="muted">'+t('linkTip')+'</p>';
+    body.innerHTML = '<h2>'+t('waitingRoom')+'</h2><p class="muted">'+t('linkTip')+'</p>'+
+      '<p><b>'+escapeHtml(location.origin+location.pathname)+'</b></p>';
     const b = el('<button class="btn green" style="margin-top:12px">'+t('hostStart')+'</button>');
     b.onclick = async ()=>{
       b.disabled=true;

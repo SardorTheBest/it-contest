@@ -115,7 +115,7 @@ label.field{display:block;font-weight:800;font-size:13px;color:var(--blue-700);m
 .step-dot{padding:8px 14px;border-radius:999px;background:var(--blue-100);color:var(--blue-700);font-weight:800;font-size:12px;cursor:pointer;border:none;}
 .step-dot.active{background:var(--blue-600);color:#fff;}
 .podium-wrap{display:flex;align-items:flex-end;justify-content:center;gap:16px;min-height:280px;padding-top:40px;}
-.podium-col{width:150px;text-align:center;opacity:0;transform:translateY(40px);transition:all .6s cubic-bezier(.2,.9,.2,1.2);}
+.podium-col{flex:1;min-width:0;max-width:260px;text-align:center;opacity:0;transform:translateY(40px);transition:all .6s cubic-bezier(.2,.9,.2,1.2);}
 .podium-col.show{opacity:1;transform:translateY(0);}
 .podium-block{background:linear-gradient(180deg,var(--blue-500),var(--blue-700));border-radius:16px 16px 0 0;box-shadow:0 -6px 0 rgba(0,0,0,.08) inset;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:10px;color:#fff;font-family:var(--font-display);}
 .podium-col.p1 .podium-block{height:190px;background:linear-gradient(180deg,#FFD866,var(--yellow-dark));color:#5B3E00;}
@@ -125,6 +125,31 @@ label.field{display:block;font-weight:800;font-size:13px;color:var(--blue-700);m
 .podium-name{font-size:16px;margin:8px 0 2px;font-family:var(--font-display);}
 .banner{background:var(--yellow);color:#6B4A00;border-radius:var(--radius-sm);padding:12px 16px;font-weight:800;margin-bottom:16px;}
 .banner.red{background:#FFE1E1;color:#A32020;}
+.podium-people{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.podium-person{background:var(--white);border-radius:12px;padding:6px 8px;font-weight:800;font-size:14px;box-shadow:0 4px 0 rgba(15,59,153,.1);overflow-wrap:anywhere;}
+.podium-person .pts{color:var(--blue-600);font-family:var(--font-display);margin-left:4px;}
+.podium-block .medal{font-size:40px;line-height:1;}
+.my-hero{text-align:center;background:linear-gradient(180deg,#FFF6D6,var(--white));border:4px solid var(--yellow);}
+.my-hero .hero-avatar{font-size:76px;display:inline-block;animation:heroPop .9s cubic-bezier(.2,.9,.2,1.3);}
+.my-hero .hero-title{font-family:var(--font-display);font-size:26px;color:var(--blue-700);margin:6px 0;}
+.my-hero .hero-place{display:inline-block;background:var(--blue-600);color:#fff;border-radius:999px;padding:6px 16px;font-weight:800;margin:6px 0 4px;}
+.my-hero .badges{justify-content:center;}
+@keyframes heroPop{0%{transform:scale(.2) rotate(-20deg);opacity:0}70%{transform:scale(1.15) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+.fame-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px;}
+.fame-card{background:var(--blue-50);border-radius:var(--radius-md);padding:14px;border:3px solid var(--blue-100);}
+.fame-card.r1{background:linear-gradient(180deg,#FFF3C4,var(--white));border-color:var(--yellow);}
+.fame-card.r2{background:linear-gradient(180deg,#EEF3FF,var(--white));border-color:var(--blue-300);}
+.fame-card.r3{background:linear-gradient(180deg,#FFE9DA,var(--white));border-color:#F2B38A;}
+.fame-card.me{box-shadow:0 0 0 4px var(--green);}
+.fame-head{display:flex;align-items:center;gap:10px;}
+.fame-avatar{font-size:34px;}
+.fame-name{font-weight:800;overflow-wrap:anywhere;}
+.fame-title{font-family:var(--font-display);color:var(--blue-700);font-size:15px;margin-top:2px;}
+.fame-total{margin-left:auto;font-family:var(--font-display);color:var(--blue-700);font-size:20px;white-space:nowrap;}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.badge{background:var(--white);border:2px solid var(--blue-100);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;color:var(--blue-700);}
+.badge.gold{background:#FFE9A8;border-color:var(--yellow);color:#6B4A00;}
+@media(max-width:600px){.podium-wrap{gap:6px;}.podium-person{font-size:12px;padding:4px 6px;}.podium-block .medal{font-size:30px;}}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:50;}
 .peers-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
 .peer-chip{background:var(--blue-100);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:800;color:var(--blue-700);}
@@ -327,6 +352,8 @@ const I18N = {
     manualSave:"Сохранить",
     resultsTitle:"Поздравляем всех участников!",
     place1:"1 МЕСТО",place2:"2 место",place3:"3 место",
+    placeN:"место",points:"баллов",hallOfFame:"🌟 Зал славы — каждый из вас особенный!",
+    youAre:"ты —",yourBadges:"Твои ачивки",
     waitBigScreen:"Результаты появятся на большом экране ведущего!",
     yourScores:"Твои баллы по раундам",
     hostDashboard:"Экран ведущего",
@@ -388,6 +415,8 @@ const I18N = {
     manualSave:"Saqlash",
     resultsTitle:"Barcha ishtirokchilarni tabriklaymiz!",
     place1:"1-O'RIN",place2:"2-o'rin",place3:"3-o'rin",
+    placeN:"o'rin",points:"ball",hallOfFame:"🌟 Shon-sharaf zali — har biringiz alohidasiz!",
+    youAre:"sen —",yourBadges:"Yutuqlaring",
     waitBigScreen:"Natijalar boshlovchining katta ekranida chiqadi!",
     yourScores:"Raundlar bo'yicha ballaringiz",
     hostDashboard:"Boshlovchi ekrani",
@@ -741,6 +770,7 @@ function renderHost(){
     body.appendChild(renderPodium());
   }
   wrap.appendChild(body);
+  if(app.phase==='results') wrap.appendChild(renderHallOfFame());
 
   if(app.phase.startsWith('round')){
     wrap.appendChild(renderHostJudgePanel(parseInt(app.phase.slice(-1),10)));
@@ -882,27 +912,139 @@ function renderLeaderboardCard(withManual){
   return card;
 }
 
+// Unique title per participant, assigned in ranking order so every device shows the same titles.
+const TITLES={
+  ru:['👑 Легенда ИИ-искусства','💎 Гранд-мастер промптов','🔥 Звезда нейросетей','🚀 Космический художник',
+      '🧠 Гений воображения','🎨 Волшебник красок','⚡ Молния идей','🦄 Создатель чудес','🛸 Покоритель ИИ',
+      '🌈 Повелитель цвета','🐉 Укротитель нейросетей','🧙 Маг промптов','🌟 Восходящая звезда','🦁 Смелый творец',
+      '🎬 Режиссёр фантазий','🔮 Провидец будущего','🏗️ Архитектор миров','🎮 Мастер игры','🪄 Чародей пикселей',
+      '🛰️ Капитан идей','🌋 Вулкан креатива','🐼 Добрый гений','🦊 Хитрый изобретатель','🎯 Мастер точности'],
+  uz:["👑 SI san'ati afsonasi","💎 Prompt grossmeysteri","🔥 Neyrotarmoqlar yulduzi","🚀 Kosmik rassom",
+      "🧠 Tasavvur dahosi","🎨 Ranglar sehrgari","⚡ G'oyalar chaqmog'i","🦄 Mo'jizalar yaratuvchisi","🛸 SI zabt etuvchisi",
+      "🌈 Ranglar hukmdori","🐉 Neyrotarmoqlar ustasi","🧙 Prompt sehrgari","🌟 Chaqnayotgan yulduz","🦁 Jasur ijodkor",
+      "🎬 Fantaziya rejissyori","🔮 Kelajak bashoratchisi","🏗️ Olamlar me'mori","🎮 O'yin ustasi","🪄 Piksellar sehrgari",
+      "🛰️ G'oyalar kapitani","🌋 Kreativ vulqon","🐼 Mehribon daho","🦊 Ayyor ixtirochi","🎯 Aniqlik ustasi"]
+};
+const BADGES={
+  gold:{ru:'🥇 Чемпион',uz:'🥇 Chempion',gold:true},
+  silver:{ru:'🥈 Серебряный призёр',uz:'🥈 Kumush sovrindor',gold:true},
+  bronze:{ru:'🥉 Бронзовый призёр',uz:'🥉 Bronza sovrindor',gold:true},
+  perfect:{ru:'🎯 Идеал 30 из 30',uz:'🎯 Mukammal 30/30',gold:true},
+  ten:{ru:'💯 Взял десятку',uz:"💯 O'nlik oldi"},
+  roundStar:{ru:'⭐ Лучший в раунде',uz:'⭐ Raund yulduzi'},
+  stable:{ru:'🧱 Стальная стабильность',uz:"🧱 Po'latdek barqaror"},
+  growth:{ru:'📈 Рост к финалу',uz:"📈 Finalga o'sish"},
+  finish:{ru:'🎉 Мощный финиш',uz:'🎉 Kuchli finish'},
+  fast:{ru:'🚀 Быстрый старт',uz:'🚀 Tez start'},
+  brave:{ru:'💪 Не сдаётся',uz:"💪 Taslim bo'lmaydi"},
+  all3:{ru:'🏁 Прошёл все раунды',uz:"🏁 Barcha raundlardan o'tdi"},
+  debut:{ru:'🌱 Смелый дебют',uz:'🌱 Jasur debyut'},
+  creator:{ru:'🎨 Творец ИИ-искусства',uz:"🎨 SI san'ati ijodkori"}
+};
+
+function rankedResults(){
+  const rows=Object.entries(app.scores).map(([name,s])=>({
+    name, avatar:s.avatar||'🙂', r1:s.r1, r2:s.r2, r3:s.r3,
+    total:(s.r1||0)+(s.r2||0)+(s.r3||0)
+  })).sort((a,b)=>b.total-a.total || a.name.localeCompare(b.name));
+  const totals=[...new Set(rows.map(r=>r.total))];
+  const roundBest={};
+  ['r1','r2','r3'].forEach(k=>{
+    const vals=rows.map(r=>r[k]).filter(v=>v!=null);
+    roundBest[k]=vals.length?Math.max(...vals):null;
+  });
+  const titles=TITLES[app.lang]||TITLES.ru;
+  rows.forEach((r,i)=>{
+    r.rank=totals.indexOf(r.total)+1;
+    r.title=titles[i%titles.length];
+    r.badges=participantBadges(r,roundBest);
+  });
+  return rows;
+}
+
+function participantBadges(r,roundBest){
+  const b=[];
+  const played=[r.r1,r.r2,r.r3].filter(v=>v!=null);
+  if(r.rank===1) b.push('gold'); else if(r.rank===2) b.push('silver'); else if(r.rank===3) b.push('bronze');
+  if(played.length===3 && played.every(v=>v===10)) b.push('perfect');
+  else if(played.includes(10)) b.push('ten');
+  if(['r1','r2','r3'].some(k=>r[k]!=null && r[k]===roundBest[k])) b.push('roundStar');
+  if(played.length===3 && Math.min(...played)>=9 && !b.includes('perfect')) b.push('stable');
+  if(r.r1!=null && r.r3!=null && r.r3>r.r1) b.push('growth');
+  if(r.r3!=null && r.r3>=9) b.push('finish');
+  if(r.r1!=null && r.r1>=9) b.push('fast');
+  if(played.some(v=>v<6)) b.push('brave');
+  if(played.length===3) b.push('all3'); else b.push('debut');
+  b.push('creator');
+  return b;
+}
+
+function badgesHtml(keys){
+  return '<div class="badges">'+keys.map(k=>
+    '<span class="badge'+(BADGES[k].gold?' gold':'')+'">'+escapeHtml(BADGES[k][app.lang]||BADGES[k].ru)+'</span>'
+  ).join('')+'</div>';
+}
+
+function placeLabel(rank){
+  return rank===1?'🥇 '+t('place1'):rank===2?'🥈 '+t('place2'):rank===3?'🥉 '+t('place3'):'#'+rank+' '+t('placeN');
+}
+
+// Podium plays its reveal animation and confetti only once per device; later re-renders show it instantly.
+let podiumAnimated=false;
 function renderPodium(){
+  const rows=rankedResults();
   const wrap = el('<div></div>');
   wrap.appendChild(el('<h2 class="center">🏆 '+t('resultsTitle')+'</h2>'));
-  const rows = Object.entries(app.scores).map(([name,s])=>({name, ...s})).sort((a,b)=>(b.total||0)-(a.total||0)).slice(0,3);
   const pw = el('<div class="podium-wrap"></div>');
-  const order = [1,0,2];
-  order.forEach(idx=>{
-    const r = rows[idx];
-    if(!r) return;
-    const place = idx===0?'p1':idx===1?'p2':'p3';
-    const label = idx===0?t('place1'):idx===1?t('place2'):t('place3');
-    const col = el('<div class="podium-col '+place+'"><div class="podium-face">'+(r.avatar||'🙂')+'</div><div class="podium-name">'+escapeHtml(r.name)+'</div><div class="muted">'+(r.total||0)+'</div><div class="podium-block">'+label+'</div></div>');
-    pw.appendChild(col);
+  [2,1,3].forEach(rank=>{
+    const group=rows.filter(r=>r.rank===rank);
+    if(!group.length) return;
+    const medal=rank===1?'🥇':rank===2?'🥈':'🥉';
+    const label=rank===1?t('place1'):rank===2?t('place2'):t('place3');
+    const people=group.map(r=>'<div class="podium-person">'+r.avatar+' '+escapeHtml(r.name)+
+      '<span class="pts">'+r.total+'</span></div>').join('');
+    pw.appendChild(el('<div class="podium-col p'+rank+'"><div class="podium-people">'+people+'</div>'+
+      '<div class="podium-block"><div class="medal">'+medal+'</div>'+label+'</div></div>'));
   });
   wrap.appendChild(pw);
-  setTimeout(()=>{
-    const cols = pw.querySelectorAll('.podium-col');
-    const seq = [pw.querySelector('.p3'), pw.querySelector('.p2'), pw.querySelector('.p1')];
-    seq.forEach((c,i)=>{ if(c) setTimeout(()=>{ c.classList.add('show'); if(i===2) fireConfetti(); }, i*550); });
-  }, 50);
+  if(podiumAnimated){
+    pw.querySelectorAll('.podium-col').forEach(c=>c.classList.add('show'));
+  } else {
+    podiumAnimated=true;
+    setTimeout(()=>{
+      const seq = [pw.querySelector('.p3'), pw.querySelector('.p2'), pw.querySelector('.p1')];
+      seq.forEach((c,i)=>{ setTimeout(()=>{
+        if(c) c.classList.add('show');
+        if(i===2){ fireConfetti(); setTimeout(fireConfetti,1800); }
+      }, i*700); });
+    }, 50);
+  }
   return wrap;
+}
+
+function renderHallOfFame(){
+  const rows=rankedResults();
+  const card=el('<div class="card"><h2 class="center">'+t('hallOfFame')+'</h2></div>');
+  const grid=el('<div class="fame-grid"></div>');
+  rows.forEach(r=>{
+    const cls='fame-card'+(r.rank<=3?' r'+r.rank:'')+(app.role==='participant'&&r.name===app.name?' me':'');
+    grid.appendChild(el('<div class="'+cls+'"><div class="fame-head"><div class="fame-avatar">'+r.avatar+'</div>'+
+      '<div><div class="fame-name">'+escapeHtml(r.name)+'</div><div class="fame-title">'+escapeHtml(r.title)+'</div></div>'+
+      '<div class="fame-total">'+r.total+'</div></div>'+
+      '<div class="muted" style="margin-top:6px">'+placeLabel(r.rank)+'</div>'+badgesHtml(r.badges)+'</div>'));
+  });
+  card.appendChild(grid);
+  return card;
+}
+
+function renderMyHero(){
+  const me=rankedResults().find(r=>r.name===app.name);
+  if(!me) return null;
+  return el('<div class="card my-hero"><div class="hero-avatar">'+me.avatar+'</div>'+
+    '<div><b>'+escapeHtml(me.name)+'</b>, '+t('youAre')+'</div>'+
+    '<div class="hero-title">'+escapeHtml(me.title)+'</div>'+
+    '<div class="hero-place">'+placeLabel(me.rank)+' · '+me.total+' '+t('points')+'</div>'+
+    '<h3 style="margin-top:12px">'+t('yourBadges')+'</h3>'+badgesHtml(me.badges)+'</div>');
 }
 
 function fireConfetti(){
@@ -961,8 +1103,12 @@ function renderParticipant(){
   } else if(app.phase.startsWith('round')){
     wrap.appendChild(renderRoundScreen(parseInt(app.phase.slice(-1),10)));
   } else if(app.phase==='results'){
-    const c = el('<div class="card center"><h2>🏆</h2><p>'+t('waitBigScreen')+'</p></div>');
-    wrap.appendChild(c);
+    const hero=renderMyHero();
+    if(hero) wrap.appendChild(hero);
+    const podium=el('<div class="card"></div>');
+    podium.appendChild(renderPodium());
+    wrap.appendChild(podium);
+    wrap.appendChild(renderHallOfFame());
   }
 
   const mine = app.scores[app.name] || {};

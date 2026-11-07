@@ -135,4 +135,21 @@ test('contest flow works without Claude or a configured Google key', async t => 
     [state.scores.Алия.r1,state.scores.Алия.r2,state.scores.Алия.r3],
     [8,9,10]
   );
+
+  const history=await (await fetch(`${base}/api/history`)).json();
+  assert.equal(history.entries.length,1);
+  assert.deepEqual(
+    [history.entries[0].scores.Алия.r1,history.entries[0].scores.Алия.r2,history.entries[0].scores.Алия.r3],
+    [8,9,10]
+  );
+  assert.equal(typeof history.entries[0].ts,'number');
+
+  // Leaving results and coming back archives a second, independent snapshot.
+  await post('/api/room/phase',{id:hostId,phase:'lobby'});
+  await post('/api/room/score',{id:studentId,name:'Алия',roundKey:'r1',score:3});
+  await post('/api/room/phase',{id:hostId,phase:'results'});
+  const history2=await (await fetch(`${base}/api/history`)).json();
+  assert.equal(history2.entries.length,2);
+  assert.equal(history2.entries[0].scores.Алия.r1,3);
+  assert.equal(history2.entries[1].scores.Алия.r1,8);
 });

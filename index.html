@@ -359,6 +359,12 @@ const I18N = {
     hostDashboard:"Экран ведущего",
     phaseLobby:"Зал ожидания",phaseSlide:"Презентация",phaseRound:"Раунд",phaseResults:"Итоги",
     linkTip:"Открой эту ссылку на устройствах участников:",
+    historyLink:"📜 Результаты прошлых конкурсов",
+    historyTitle:"История конкурсов",
+    historySubtitle:"Результаты всех конкурсов «IT-Квест», которые уже прошли.",
+    historyEmpty:"Пока не прошло ни одного конкурса.",
+    historyBack:"← На главную",
+    loading:"Загружаем…",
   },
   uz:{
     hostBusy:"Boshlovchi boshqa qurilmadan ulangan. Boshlovchi ekranini o'sha yerda oching yoki u yopilgandan keyin 10 daqiqa kuting.",
@@ -422,6 +428,12 @@ const I18N = {
     hostDashboard:"Boshlovchi ekrani",
     phaseLobby:"Kutish zali",phaseSlide:"Taqdimot",phaseRound:"Raund",phaseResults:"Natijalar",
     linkTip:"Ishtirokchilar qurilmalarida shu havolani oching:",
+    historyLink:"📜 O'tgan konkurslar natijalari",
+    historyTitle:"Konkurslar tarixi",
+    historySubtitle:"O'tib bo'lgan barcha «IT-Kvest» konkurslarining natijalari.",
+    historyEmpty:"Hali birorta konkurs o'tkazilmagan.",
+    historyBack:"← Bosh sahifaga",
+    loading:"Yuklanmoqda…",
   }
 };
 
@@ -436,6 +448,8 @@ let roomOk = false, serverRevision = -1;
 let nextScoreRetryAt = 0;
 // Main link = participant screen. Host screen opens only via the separate ?host link.
 const IS_HOST_LINK = new URLSearchParams(location.search).has('host');
+// Read-only results archive, open to anyone, no name/avatar join needed.
+const IS_HISTORY_LINK = new URLSearchParams(location.search).has('history');
 // Host id lives in localStorage so a reopened host tab keeps its host lock on the server.
 const idStore = IS_HOST_LINK ? localStorage : sessionStorage;
 const CLIENT_ID_KEY = IS_HOST_LINK ? 'it-quest-host-id' : 'it-quest-client-id';
@@ -549,10 +563,12 @@ async function syncRoom(){
   }
 }
 
-setInterval(syncRoom,5000);
-setInterval(()=>{ if(app.role==='host' || app.joined) updatePresence(); },30000);
-if(app.role==='host') updatePresence();
-syncRoom();
+if(!IS_HISTORY_LINK){
+  setInterval(syncRoom,5000);
+  setInterval(()=>{ if(app.role==='host' || app.joined) updatePresence(); },30000);
+  if(app.role==='host') updatePresence();
+  syncRoom();
+}
 
 function getAssignment(roundNo){
   const key='r'+roundNo;
@@ -650,6 +666,7 @@ function render(){
   const v = document.getElementById('view');
   document.querySelectorAll('.langbtn').forEach(b=>b.classList.toggle('active', b.dataset.lang===app.lang));
   v.innerHTML = '';
+  if(IS_HISTORY_LINK){ v.appendChild(renderHistoryView()); return; }
   if(app.role==='host' && app.hostBlocked){ v.appendChild(renderHostBlocked()); return; }
   if(app.role==='participant' && !app.joined){ v.appendChild(renderNamePick()); return; }
   v.appendChild(app.role==='host' ? renderHost() : renderParticipant());
@@ -686,6 +703,45 @@ function renderNamePick(){
     await updatePresence();
     render();
   };
+  const histLink = el('<p class="center" style="margin-top:14px"><a href="?history" class="muted" style="color:var(--blue-700);font-weight:800;text-decoration:none">'+t('historyLink')+'</a></p>');
+  wrap.appendChild(histLink);
+  return wrap;
+}
+
+function renderHistoryView(){
+  const wrap = el('<div></div>');
+  wrap.appendChild(el('<div class="card"><h1>'+t('historyTitle')+'</h1><p class="muted">'+t('historySubtitle')+'</p>'+
+    '<a href="'+location.pathname+'" style="color:var(--blue-700);font-weight:800;text-decoration:none">'+t('historyBack')+'</a></div>'));
+  const list = el('<div></div>');
+  list.appendChild(el('<div class="card center muted">'+t('loading')+'</div>'));
+  wrap.appendChild(list);
+  fetch('/api/history',{cache:'no-store'}).then(r=>{
+    if(!r.ok) throw new Error('history fetch failed: '+r.status);
+    return r.json();
+  }).then(data=>{
+    list.innerHTML='';
+    const entries=data.entries||[];
+    if(!entries.length){
+      list.appendChild(el('<div class="card center muted">'+t('historyEmpty')+'</div>'));
+      return;
+    }
+    entries.forEach(entry=>{
+      const rows=rankedResults(entry.scores);
+      const date=new Date(entry.ts*1000).toLocaleString(app.lang==='uz'?'uz-UZ':'ru-RU',
+        {day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const card=el('<div class="card"><h3>📅 '+escapeHtml(date)+'</h3></div>');
+      rows.forEach(r=>{
+        const medal=r.rank===1?'🥇':r.rank===2?'🥈':r.rank===3?'🥉':('#'+r.rank);
+        card.appendChild(el('<div class="lb-row"><div class="lb-rank">'+medal+'</div>'+
+          '<div class="lb-avatar">'+r.avatar+'</div><div class="lb-name">'+escapeHtml(r.name)+'</div>'+
+          '<div class="lb-total">'+r.total+'</div></div>'));
+      });
+      list.appendChild(card);
+    });
+  }).catch(()=>{
+    list.innerHTML='';
+    list.appendChild(el('<div class="banner red">⚠️ '+t('syncOffline')+'</div>'));
+  });
   return wrap;
 }
 
@@ -942,8 +998,9 @@ const BADGES={
   creator:{ru:'🎨 Творец ИИ-искусства',uz:"🎨 SI san'ati ijodkori"}
 };
 
-function rankedResults(){
-  const rows=Object.entries(app.scores).map(([name,s])=>({
+function rankedResults(scoresObj){
+  const scores=scoresObj||app.scores;
+  const rows=Object.entries(scores).map(([name,s])=>({
     name, avatar:s.avatar||'🙂', r1:s.r1, r2:s.r2, r3:s.r3,
     total:(s.r1||0)+(s.r2||0)+(s.r3||0)
   })).sort((a,b)=>b.total-a.total || a.name.localeCompare(b.name));
